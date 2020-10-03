@@ -9,11 +9,14 @@ class CalculatorViewController: UIViewController {
     @IBOutlet weak var splitNumberLabel: UILabel!
     
     var valueTip: Float?
-   
+    var result: Float = 0.0
+    var tipText: String?
+    
     @IBAction func tipChanged(_ sender: UIButton) {
-        var tipText = String(sender.currentTitle ?? "0%")
-        tipText.removeLast()
-        valueTip = Float(tipText)! / Float(100)
+        tipText = String(sender.currentTitle ?? "0%")
+        var trimTip = String(sender.currentTitle ?? "0%")
+        trimTip.removeLast()
+        valueTip = Float(trimTip)! / Float(100)
         
         if  valueTip == 0.0 {
             zeroPctButton.isSelected = true
@@ -37,10 +40,17 @@ class CalculatorViewController: UIViewController {
     }
     
     @IBAction func calculatePressed(_ sender: UIButton) {
-        
-        
-        
-        print(splitNumberLabel.text!)
+        let bill = Float(billTextField.text ?? "0.0")
+        let splitNumber = Float(splitNumberLabel.text ?? "0.0")
+        result = (bill! + (bill! * valueTip!) ) / splitNumber!
+        self.performSegue(withIdentifier: "resultSegue", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ResultViewController
+        destinationVC.result = result
+        destinationVC.tip = tipText
+        destinationVC.numberSplit = Int(splitNumberLabel.text!)!
     }
 }
 
